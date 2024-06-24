@@ -71,7 +71,6 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-
         composable(
             route = "quizScreen/{cityName}",
             arguments = listOf(
