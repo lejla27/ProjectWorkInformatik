@@ -99,7 +99,7 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
                 onClick = {
                     navController.navigate("cityScreen/Stuttgart/${R.drawable.stuttgart_bild}")
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00008B)) // Dark blue color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
             ) {
                 Text(text = "Stuttgart")
             }
@@ -108,7 +108,7 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
                 onClick = {
                     navController.navigate("cityScreen/Ulm/${R.drawable.ulm_bild}")
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00008B)) // Dark blue color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
             ) {
                 Text(text = "Ulm")
             }
@@ -117,7 +117,7 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
                 onClick = {
                     navController.navigate("cityScreen/Augsburg/${R.drawable.augsburg_bild}")
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00008B)) // Dark blue color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
             ) {
                 Text(text = "Augsburg")
             }
@@ -126,7 +126,7 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
                 onClick = {
                     navController.navigate("cityScreen/Munich/${R.drawable.muenchen_bild}")
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00008B)) // Dark blue color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
             ) {
                 Text(text = "Munich")
             }
@@ -218,7 +218,7 @@ fun CityScreen(
                 onClick = {
                     navController.navigate("quizScreen/$cityName")
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00008B))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000))
             ) {
                 Text(text = "Explore")
             }
