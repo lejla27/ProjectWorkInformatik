@@ -72,8 +72,15 @@ fun NavGraph(navController: NavHostController) {
         }
 
 
-        composable("quizScreen/Stuttgart") {
-            Quiz("Stuttgart")
+        composable(
+            route = "quizScreen/{cityName}",
+            arguments = listOf(
+            navArgument("cityName") { type = NavType.StringType }
+            )
+        )
+        { backStackEntry ->
+            val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
+            Quiz(cityName = cityName)
         }
     }
 }
