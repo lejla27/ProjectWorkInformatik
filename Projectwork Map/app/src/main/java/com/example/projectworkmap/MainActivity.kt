@@ -98,41 +98,35 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
             contentScale = ContentScale.Crop
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = {
-                    navController.navigate("cityScreen/Stuttgart/${R.drawable.stuttgart_bild}")
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
+                onClick = { navController.navigate("cityScreen/Stuttgart/${R.drawable.stuttgart_bild}") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark blue color
+                modifier = Modifier.offset(x = 10.dp, y = (-210).dp)
             ) {
                 Text(text = "Stuttgart")
             }
 
             Button(
-                onClick = {
-                    navController.navigate("cityScreen/Ulm/${R.drawable.ulm_bild}")
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
+                onClick = { navController.navigate("cityScreen/Ulm/${R.drawable.ulm_bild}") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.offset(x = (-30).dp, y = (-70).dp)// Dark blue color
             ) {
                 Text(text = "Ulm")
             }
 
             Button(
-                onClick = {
-                    navController.navigate("cityScreen/Augsburg/${R.drawable.augsburg_bild}")
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
+                onClick = { navController.navigate("cityScreen/Augsburg/${R.drawable.augsburg_bild}") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.offset(x = 20.dp, y = 60.dp)// Dark blue color
             ) {
                 Text(text = "Augsburg")
             }
 
             Button(
-                onClick = {
-                    navController.navigate("cityScreen/Munich/${R.drawable.muenchen_bild}")
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark blue color
+                onClick = { navController.navigate("cityScreen/Munich/${R.drawable.muenchen_bild}") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.offset(x = 0.dp, y = 170.dp)// Dark blue color
             ) {
                 Text(text = "Munich")
             }
