@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -16,6 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -27,22 +30,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.projectworkmap.ui.theme.TextViewModel
 
 
 class MainActivity : ComponentActivity() {
+    val textViewModel: TextViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            NavGraph(navController = navController)
+            NavGraph(navController = navController, textViewModel = textViewModel)
         }
     }
 }
 
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, textViewModel: TextViewModel) {
     NavHost(navController, startDestination = "start_screen") {
         composable("start_screen") {
             StartPageWithButtonAndImage(modifier = Modifier
@@ -79,7 +84,7 @@ fun NavGraph(navController: NavHostController) {
         )
         { backStackEntry ->
             val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
-            Quiz(cityName = cityName)
+            Quiz(cityName = cityName, textViewModel = textViewModel)
         }
     }
 }
@@ -227,11 +232,20 @@ fun CityScreen(
 }
 
 @Composable
-fun Quiz(cityName: String) {
+fun Quiz(cityName: String, textViewModel: TextViewModel) {
     Text(
         text = "What do you know about $cityName ?",
         fontSize = 50.sp,
         lineHeight = 50.sp,
         textAlign = TextAlign.Center
         )
+    val texts by textViewModel.getByCityName(cityName).observeAsState(emptyList())
+    texts.forEach { text ->
+        Text(
+            text = text.text,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(8.dp)
+        )
+    }
     }

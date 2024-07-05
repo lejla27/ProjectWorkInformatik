@@ -2,6 +2,7 @@
 buildscript {
     extra.apply {
         set("room_version", "2.6.0")
+        set("nav_version", "2.5.3")
     }
 }
 
@@ -11,6 +12,6 @@ plugins {
     alias(libs.plugins.google.devtools.ksp) apply false
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory.get())
-}
+//tasks.register("clean", Delete::class) {
+//    delete(rootProject.layout.buildDirectory.get())
+//}

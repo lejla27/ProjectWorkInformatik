@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.sqlite.android)
+    implementation(libs.androidx.runtime.livedata)
+//    implementation(libs.androidx.ui.desktop)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,6 +76,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation(libs.androidx.room.ktx)
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
 
 }
 
