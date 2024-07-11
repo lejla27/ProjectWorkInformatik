@@ -13,6 +13,6 @@ data class Text(
     val cityName: String,
     @ColumnInfo(name = "avatar")
     val avatar: String,  //if avatar is an image then the data type must be Int!
-    @ColumnInfo(name = "text")
+    @ColumnInfo(name = "description")
     val text: String
 )

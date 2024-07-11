@@ -42,7 +42,7 @@ import com.example.projectworkmap.ui.theme.TextViewModel
 
 
 class MainActivity : ComponentActivity() {
-    //private val textViewModel: TextViewModel by viewModels()
+    private val textViewModel: TextViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
