@@ -18,38 +18,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
-//class TextViewModel(private val textDao: TextDao): ViewModel() {
-//    fun getFullText(): LiveData<List<Text>> =
-//        textDao.getAll()
-//    fun getTextFor(cityName: String): Flow<List<Text>> =
-//        textDao.getByCityName(cityName)
-//
-//    companion object {
-//        val factory : ViewModelProvider.Factory = viewModelFactory {
-//            initializer {
-//                val application = (this[APPLICATION_KEY] as TextApplication)
-//                TextViewModel(application.database.textDao())
-//            }
-//        }
-//    }
-//}
+class TextViewModel(private val textDao: TextDao) : ViewModel() {
 
-class TextViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository: TextRepository
-    val allTexts: LiveData<List<Text>>
-
-    init {
-        val textDao = TextDatabase.getDatabase(application).textDao()
-        repository = TextRepository(textDao)
-        allTexts = repository.allTexts
+    fun getFullText(): Flow<List<Text>> = textDao.getAll()
+    fun getTextFor(cityName: String): Flow<List<Text>> {
+        return textDao.getByCityName(cityName)
     }
 
-    fun insert(text: Text) = viewModelScope.launch {
-        repository.insert(text)
-    }
 
-    fun getByCityName(cityName: String): LiveData<List<Text>> {
-        return repository.getByCityName(cityName)
+    companion object {
+        val factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as TextApplication)
+                TextViewModel(application.database.textDao())
+            }
+        }
     }
 }
+

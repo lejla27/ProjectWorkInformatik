@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TextDao {
     @Query("SELECT * FROM text_table")
-    fun getAll(): LiveData<List<Text>>
+    fun getAll(): Flow<List<Text>>
+
+    @Insert
+    suspend fun insert(text: Text)
 
     @Query("SELECT * FROM text_table WHERE city_name = :cityName")
-    fun getByCityName(cityName: String): LiveData<List<Text>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg quizzes: Text)
+    fun getByCityName(cityName: String): Flow<List<Text>>
 
 }

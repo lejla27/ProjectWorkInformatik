@@ -7,11 +7,11 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.jetbrains.kotlin.android) apply false
-    alias(libs.plugins.google.devtools.ksp) apply false
+    id("com.android.application") version "8.1.1" apply false
+    id("com.android.library") version "8.1.1" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
 }
 
-//tasks.register("clean", Delete::class) {
-//    delete(rootProject.layout.buildDirectory.get())
-//}
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
+}

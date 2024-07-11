@@ -10,18 +10,15 @@ abstract class TextDatabase : RoomDatabase() {
     abstract fun textDao(): TextDao
     companion object {
         @Volatile
-        private var INSTANCE: TextDatabase? = null
+        private var Instance: TextDatabase? = null
         fun getDatabase(context: Context): TextDatabase {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context,
-                    TextDatabase::class.java,
-                    "text_database"
-                )
-                    .createFromAsset("database/text.db") //database datei muss genau so heißen!
+            return Instance ?: synchronized(this) {
+                Room.databaseBuilder(context, TextDatabase::class.java, "text_table")
+                    .createFromAsset("database/text_table.db") //.db datei muss genau so heißen!
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also{
-                        INSTANCE = it
+                        Instance = it
                     }
             }
         }
