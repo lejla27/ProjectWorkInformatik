@@ -1,5 +1,6 @@
 package com.example.projectworkmap
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,10 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,46 +34,63 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.text.font.FontWeight
 import com.example.projectworkmap.ui.theme.TextViewModel
 
 
 class MainActivity : ComponentActivity() {
-    private val textViewModel: TextViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val textViewModel: TextViewModel by viewModels {
+            TextViewModel.factory
+        } // Pass the factory explicitly
         setContent {
             val navController = rememberNavController()
-            NavGraph(navController = navController)
+            NavGraph(navController = navController, textViewModel = textViewModel)
         }
     }
 }
 
 
+
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, textViewModel: TextViewModel) {
+    val context = navController.context
+    var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
+
     NavHost(navController, startDestination = "start_screen") {
         composable("start_screen") {
-            StartPageWithButtonAndImage(modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center), navController)
+            StartPageWithButtonAndImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center), navController
+            )
         }
         composable("map_screen") {
-            MapWithButtonAndImage(modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center), navController)
+            MapWithButtonAndImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center), navController, selectedAvatar
+            )
         }
         composable("avatar_screen") {
-            AvatarSelectionScreen(modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center), navController)
+            AvatarSelectionScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center), navController
+            ){
+                selectedAvatar = it
+                saveAvatar(context, it)
+            }
         }
         composable("route_screen") {
-            RouteSelectionScreen(modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center), navController)
+            RouteSelectionScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center), navController, selectedAvatar
+            )
         }
 
         composable(
@@ -90,26 +105,27 @@ fun NavGraph(navController: NavHostController) {
             CityScreen(
                 cityName = cityName,
                 painter = painterResource(id = imageResource),
-                navController = navController
+                navController = navController,
+                selectedAvatar = selectedAvatar
             )
         }
 
         composable(
-            route = "quizScreen/{cityName}",
+            route = "introScreen/{cityName}",
             arguments = listOf(
             navArgument("cityName") { type = NavType.StringType }
             )
         )
         { backStackEntry ->
             val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
-            Quiz(cityName = cityName)
+            Intro(cityName = cityName, textViewModel = textViewModel)
         }
     }
 }
 
 
 @Composable
-fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostController) {
+fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostController, selectedAvatar: String?) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -154,6 +170,19 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
                 Text(text = "Munich")
             }
         }
+        selectedAvatar?.let {
+            val avatarResId = getAvatarResourceId(it)
+            if (avatarResId != 0) {
+                Image(
+                    painter = painterResource(id = avatarResId),
+                    contentDescription = "Selected Avatar",
+                    modifier = Modifier
+                        .size(200.dp)
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                )
+            }
+        }
     }
 }
 
@@ -177,23 +206,13 @@ fun StartPageWithButtonAndImage(modifier: Modifier = Modifier, navController: Na
                 .fillMaxWidth(0.7f) // Adjust the width as needed to make all buttons the same size
                 .height(48.dp)
 
-//            Button(
-//                onClick = { /* TODO: Handle Choose Route */ },
-//                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
-//                modifier = buttonModifier
-//            ) {
-//                Text(
-//                    text = "CHOOSE ROUTE",
-//                    fontSize = 16.sp
-//                )
-//            }
             Button(
                 onClick = { navController.navigate("avatar_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
                 modifier = buttonModifier
             ) {
                 Text(
-                    text = "START - Choose Avatar",
+                    text = "START",
                     fontSize = 16.sp
                 )
             }
@@ -202,7 +221,10 @@ fun StartPageWithButtonAndImage(modifier: Modifier = Modifier, navController: Na
 }
 
 @Composable
-fun AvatarSelectionScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun AvatarSelectionScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    onAvatarSelected: (String) -> Unit) {
     var selectedAvatar by remember { mutableStateOf("Select Avatar") }
     val avatars = listOf("Elsa", "Barbie", "Spiderman", "Harry Potter")
     val avatarImages = mapOf(
@@ -235,6 +257,7 @@ fun AvatarSelectionScreen(modifier: Modifier = Modifier, navController: NavHostC
                 items(avatars) { avatar ->
                     AvatarListItem(avatar) {
                         selectedAvatar = avatar
+                        onAvatarSelected(avatar)
                     }
                 }
             }
@@ -242,14 +265,14 @@ fun AvatarSelectionScreen(modifier: Modifier = Modifier, navController: NavHostC
                 Image(
                     painter = painterResource(id = avatarImages[it] ?: 0),
                     contentDescription = "$it Image",
-                    modifier = Modifier.size(150.dp)
+                    modifier = Modifier.size(250.dp)
                 )
             }
-            val buttonModifier = Modifier
+
             Button(
                 onClick = { navController.navigate("route_screen") },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
-                modifier = buttonModifier
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Text(
                     text = "Choose Route",
@@ -272,27 +295,100 @@ fun AvatarListItem(avatar: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun RouteSelectionScreen(modifier: Modifier = Modifier, navController: NavHostController){
-    Column(
+fun RouteSelectionScreen(modifier: Modifier = Modifier, navController: NavHostController, selectedAvatar: String?) {
+    Box(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Which route do you want to take?",
-            fontSize = 24.sp,
-            textAlign = TextAlign.Center
+        Image(
+            painter = painterResource(R.drawable.chooseroute_drawable),
+            contentDescription = "HintergrundBild",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
-        val buttonModifier = Modifier
-        Button(
-            onClick = { navController.navigate("map_screen") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
-            modifier = buttonModifier
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "START",
-                fontSize = 16.sp
+                text = "ROUTE HISTORY",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
+            Button(
+                onClick = { navController.navigate("map_screen") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Munich to Heilbronn",
+                    fontSize = 16.sp
+                )
+            }
+            Button(
+                onClick = { /* Handle navigation */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Heilbronn to Stuttgart",
+                    fontSize = 16.sp
+                )
+            }
+            Button(
+                onClick = { /* Handle navigation */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Munich to Salzburg",
+                    fontSize = 16.sp
+                )
+            }
+            Button(
+                onClick = { /* Handle navigation */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Munich to Garching",
+                    fontSize = 16.sp
+                )
+            }
+            Button(
+                onClick = { /* Handle navigation */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Starnberg to Ulm",
+                    fontSize = 16.sp
+                )
+            }
+            Button(
+                onClick = { /* Handle navigation */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Augsburg to Munich",
+                    fontSize = 16.sp
+                )
+            }
+        }
+        selectedAvatar?.let {
+            val avatarResId = getAvatarResourceId(it)
+            if (avatarResId != 0) {
+                Image(
+                    painter = painterResource(id = avatarResId),
+                    contentDescription = "Selected Avatar",
+                    modifier = Modifier
+                        .size(200.dp)
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                )
+            }
         }
     }
 }
@@ -303,6 +399,7 @@ fun CityScreen(
     cityName: String,
     painter: Painter,
     navController: NavController,
+    selectedAvatar: String?,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -324,23 +421,61 @@ fun CityScreen(
             )
             Button(
                 onClick = {
-                    navController.navigate("quizScreen/$cityName")
+                    navController.navigate("introScreen/$cityName")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000))
             ) {
                 Text(text = "Explore")
             }
         }
+        selectedAvatar?.let {
+            val avatarResId = getAvatarResourceId(it)
+            if (avatarResId != 0) {
+                Image(
+                    painter = painterResource(id = avatarResId),
+                    contentDescription = "Selected Avatar",
+                    modifier = Modifier
+                        .size(600.dp)
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun Quiz(cityName: String) {
-    // val textList by textViewModel.getTextFor(cityName).collectAsState(initial = emptyList())
+fun Intro(cityName: String , textViewModel: TextViewModel) {
+    //val textList by textViewModel.getTextFor(cityName).collectAsState(initial = emptyList())
     Text(
         text = "What do you know about $cityName?",
         fontSize = 50.sp,
         lineHeight = 50.sp,
         textAlign = TextAlign.Center
     )
+}
+
+// Utility functions to handle SharedPreferences
+fun saveAvatar(context: Context, avatar: String) {
+    val sharedPreferences = context.getSharedPreferences("avatar_pref", Context.MODE_PRIVATE)
+    with(sharedPreferences.edit()) {
+        putString("selected_avatar", avatar)
+        apply()
+    }
+}
+
+
+fun getSavedAvatar(context: Context): String? {
+    val sharedPreferences = context.getSharedPreferences("avatar_pref", Context.MODE_PRIVATE)
+    return sharedPreferences.getString("selected_avatar", null)
+}
+@Composable
+fun getAvatarResourceId(avatar: String): Int {
+    return when (avatar) {
+        "Elsa" -> R.drawable.elsa_drawable
+        "Barbie" -> R.drawable.barbie_drawable
+        "Spiderman" -> R.drawable.spiderman_drawable
+        "Harry Potter" -> R.drawable.harrypotter_drawable
+        else -> 0
+    }
 }

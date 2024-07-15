@@ -14,7 +14,7 @@ abstract class TextDatabase : RoomDatabase() {
         fun getDatabase(context: Context): TextDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, TextDatabase::class.java, "text_table")
-                    .createFromAsset("database/text_table.db") //.db datei muss genau so heißen!
+                    .createFromAsset("database/text_table.db")
                     .fallbackToDestructiveMigration()
                     .build()
                     .also{
