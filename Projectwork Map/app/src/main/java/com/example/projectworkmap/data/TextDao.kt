@@ -16,7 +16,7 @@ interface TextDao {
     @Insert
     suspend fun insert(text: Text)
 
-    @Query("SELECT * FROM text_table WHERE city_name = :cityName")
-    fun getByCityName(cityName: String): Flow<List<Text>>
+    @Query("SELECT * FROM text_table WHERE city_name = :cityName AND avatar = :avatar")
+    fun getByCityNameAndAvatar(cityName: String, avatar: String): Flow<List<Text>>
 
 }

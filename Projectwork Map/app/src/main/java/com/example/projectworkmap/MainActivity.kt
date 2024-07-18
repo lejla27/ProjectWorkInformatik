@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,7 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projectworkmap.ui.theme.TextViewModel
 
 
@@ -46,9 +49,10 @@ class MainActivity : ComponentActivity() {
         val textViewModel: TextViewModel by viewModels {
             TextViewModel.factory
         } // Pass the factory explicitly
+        val cities = listOf("Munich", "Augsburg", "Ulm", "Stuttgart") //images are not adaptable to the cities in the list (yet)
         setContent {
             val navController = rememberNavController()
-            NavGraph(navController = navController, textViewModel = textViewModel)
+            NavGraph(navController = navController, textViewModel = textViewModel, cities = cities)
         }
     }
 }
@@ -56,9 +60,12 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun NavGraph(navController: NavHostController, textViewModel: TextViewModel) {
+fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>) {
     val context = navController.context
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
+    var visitedCities by remember { mutableStateOf(setOf<String>()) }
+    val cities = cities
+    var nextCityToVisit by remember { mutableStateOf(cities.first()) }
 
     NavHost(navController, startDestination = "start_screen") {
         composable("start_screen") {
@@ -72,7 +79,7 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel) {
             MapWithButtonAndImage(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center), navController, selectedAvatar
+                    .wrapContentSize(Alignment.Center), navController, selectedAvatar, visitedCities, nextCityToVisit, cities
             )
         }
         composable("avatar_screen") {
@@ -104,28 +111,44 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel) {
             val imageResource = backStackEntry.arguments?.getInt("imageResource") ?: 0
             CityScreen(
                 cityName = cityName,
-                painter = painterResource(id = imageResource),
+                imageResource = imageResource,
                 navController = navController,
                 selectedAvatar = selectedAvatar
             )
         }
 
         composable(
-            route = "introScreen/{cityName}",
+            route = "introScreen/{cityName}/{imageResource}/{selectedAvatar}",
             arguments = listOf(
-            navArgument("cityName") { type = NavType.StringType }
+                navArgument("cityName") { type = NavType.StringType },
+                navArgument("imageResource") { type = NavType.IntType },
+                navArgument("selectedAvatar") { type = NavType.StringType }
             )
         )
         { backStackEntry ->
             val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
-            Intro(cityName = cityName, textViewModel = textViewModel)
+            val imageResource = backStackEntry.arguments?.getInt("imageResource") ?: 0
+            val selectedAvatar = backStackEntry.arguments?.getString("selectedAvatar") ?: ""
+            Intro(cityName = cityName, imageResource = imageResource, avatar = selectedAvatar, navController = navController, viewModel = textViewModel){
+                visitedCities = visitedCities + cityName
+                val currentIndex = cities.indexOf(cityName)
+                nextCityToVisit = if (currentIndex + 1 < cities.size) cities[currentIndex + 1] else ""
+                navController.navigate("map_screen")
+            }
         }
     }
 }
 
 
 @Composable
-fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostController, selectedAvatar: String?) {
+fun MapWithButtonAndImage(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    selectedAvatar: String?,
+    visitedCities: Set<String>,
+    nextCityToVisit: String,
+    cities: List<String>
+) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -136,38 +159,34 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Column(
-        ) {
-            Button(
-                onClick = { navController.navigate("cityScreen/Stuttgart/${R.drawable.stuttgart_bild}") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark blue color
-                modifier = Modifier.offset(x = 10.dp, y = (-210).dp)
-            ) {
-                Text(text = "Stuttgart")
-            }
+        Column {
+            cities.forEach { cityName -> // NEW: Iterate over the specific cities
+                val imageResource = when (cityName) {
+                    "Munich" -> R.drawable.muenchen_bild
+                    "Augsburg" -> R.drawable.augsburg_bild
+                    "Ulm" -> R.drawable.ulm_bild
+                    "Stuttgart" -> R.drawable.stuttgart_bild
+                    else -> 0
+                }
 
-            Button(
-                onClick = { navController.navigate("cityScreen/Ulm/${R.drawable.ulm_bild}") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
-                modifier = Modifier.offset(x = (-30).dp, y = (-70).dp)// Dark blue color
-            ) {
-                Text(text = "Ulm")
-            }
+                val modifier = when (cityName) { // NEW: Assign button positions
+                    "Munich" -> Modifier.offset(x = 0.dp, y = 330.dp)
+                    "Augsburg" -> Modifier.offset(x = 15.dp, y = 100.dp)
+                    "Ulm" -> Modifier.offset(x = (-30).dp, y = (-140).dp)
+                    "Stuttgart" -> Modifier.offset(x = 10.dp, y = (-360).dp)
+                    else -> Modifier
+                }
 
-            Button(
-                onClick = { navController.navigate("cityScreen/Augsburg/${R.drawable.augsburg_bild}") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
-                modifier = Modifier.offset(x = 20.dp, y = 60.dp)// Dark blue color
-            ) {
-                Text(text = "Augsburg")
-            }
-
-            Button(
-                onClick = { navController.navigate("cityScreen/Munich/${R.drawable.muenchen_bild}") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
-                modifier = Modifier.offset(x = 0.dp, y = 170.dp)// Dark blue color
-            ) {
-                Text(text = "Munich")
+                if (imageResource != 0) { // Only create button if imageResource is valid
+                    CityButton(
+                        cityName = cityName,
+                        navController = navController,
+                        imageResource = imageResource,
+                        isVisited = visitedCities.contains(cityName),
+                        nextCityToVisit = nextCityToVisit,
+                        modifier = modifier
+                    )
+                }
             }
         }
         selectedAvatar?.let {
@@ -183,6 +202,33 @@ fun MapWithButtonAndImage(modifier: Modifier = Modifier, navController: NavHostC
                 )
             }
         }
+    }
+}
+
+
+
+@Composable
+fun CityButton(
+    cityName: String,
+    navController: NavHostController,
+    imageResource: Int,
+    isVisited: Boolean,
+    nextCityToVisit: String,
+    modifier: Modifier = Modifier, // NEW
+    initialCity: Boolean = false
+) {
+    val buttonColor = when {
+        isVisited -> Color.Gray // If the city has been visited, the button is gray
+        cityName == nextCityToVisit -> Color(0xFF8B0000) // If the city is the next to visit, the button is red
+        initialCity -> Color(0xFF8B0000) // Initially red for the first city
+        else -> Color.Gray // Otherwise gray
+    }
+    Button(
+        onClick = { navController.navigate("cityScreen/$cityName/$imageResource") },
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
+        modifier = modifier.padding(8.dp) // NEW
+    ) {
+        Text(text = cityName)
     }
 }
 
@@ -253,6 +299,25 @@ fun AvatarSelectionScreen(
                 fontSize = 24.sp,
                 textAlign = TextAlign.Center
             )
+            Box(
+                modifier = Modifier
+                    .size(250.dp)
+                    .padding(16.dp)
+                    .align(Alignment.CenterHorizontally),
+                contentAlignment = Alignment.Center
+            ) {
+                selectedAvatar.takeIf { it != "Select Avatar" }?.let {
+                    Image(
+                        painter = painterResource(id = avatarImages[it] ?: 0),
+                        contentDescription = "$it Image",
+                        modifier = Modifier.size(250.dp)
+                    )
+                } ?: Text(
+                    text = "No Avatar Selected",
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
             LazyColumn {
                 items(avatars) { avatar ->
                     AvatarListItem(avatar) {
@@ -260,13 +325,6 @@ fun AvatarSelectionScreen(
                         onAvatarSelected(avatar)
                     }
                 }
-            }
-            selectedAvatar.takeIf { it != "Select Avatar" }?.let {
-                Image(
-                    painter = painterResource(id = avatarImages[it] ?: 0),
-                    contentDescription = "$it Image",
-                    modifier = Modifier.size(250.dp)
-                )
             }
 
             Button(
@@ -322,7 +380,7 @@ fun RouteSelectionScreen(modifier: Modifier = Modifier, navController: NavHostCo
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Text(
-                    text = "Munich to Heilbronn",
+                    text = "Munich to Stuttgart",
                     fontSize = 16.sp
                 )
             }
@@ -397,7 +455,7 @@ fun RouteSelectionScreen(modifier: Modifier = Modifier, navController: NavHostCo
 @Composable
 fun CityScreen(
     cityName: String,
-    painter: Painter,
+    imageResource: Int,
     navController: NavController,
     selectedAvatar: String?,
     modifier: Modifier = Modifier
@@ -407,52 +465,123 @@ fun CityScreen(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painter,
+            painter = painterResource(id = imageResource),
             contentDescription = "HintergrundBild",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Column {
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
                 text = cityName,
                 fontSize = 50.sp,
                 lineHeight = 50.sp,
                 textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            selectedAvatar?.let {
+                val avatarResId = getAvatarResourceId(it)
+                if (avatarResId != 0) {
+                    Image(
+                        painter = painterResource(id = avatarResId),
+                        contentDescription = "Selected Avatar",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .padding(16.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = {
-                    navController.navigate("introScreen/$cityName")
+                    navController.navigate("introScreen/$cityName/$imageResource/$selectedAvatar")
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000))
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark red color
             ) {
                 Text(text = "Explore")
-            }
-        }
-        selectedAvatar?.let {
-            val avatarResId = getAvatarResourceId(it)
-            if (avatarResId != 0) {
-                Image(
-                    painter = painterResource(id = avatarResId),
-                    contentDescription = "Selected Avatar",
-                    modifier = Modifier
-                        .size(600.dp)
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                )
             }
         }
     }
 }
 
+
 @Composable
-fun Intro(cityName: String , textViewModel: TextViewModel) {
-    //val textList by textViewModel.getTextFor(cityName).collectAsState(initial = emptyList())
-    Text(
-        text = "What do you know about $cityName?",
-        fontSize = 50.sp,
-        lineHeight = 50.sp,
-        textAlign = TextAlign.Center
-    )
+fun Intro(
+    cityName: String,
+    imageResource: Int,
+    avatar: String,
+    navController: NavController,
+    viewModel: TextViewModel = viewModel(factory = TextViewModel.factory),
+    onFinish: () -> Unit // NEW
+) {
+    val texts by viewModel.getTextFor(cityName, avatar).collectAsState(initial = emptyList())
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Image(
+            painter = painterResource(id = imageResource),
+            contentDescription = "HintergrundBild",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = "What do you know about $cityName?",
+                fontSize = 50.sp,
+                lineHeight = 50.sp,
+                textAlign = TextAlign.Center
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF8B0000)) // Dark red color for the box
+                    .padding(16.dp)
+            ) {
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(texts) { text ->
+                        Text(
+                            text = text.text,
+                            fontSize = 20.sp,
+                            lineHeight = 28.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+            Button(
+                onClick = {
+                    onFinish()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark red color
+            ) {
+                Text(text = "Let's go on!")
+            }
+        }
+    }
 }
 
 // Utility functions to handle SharedPreferences
