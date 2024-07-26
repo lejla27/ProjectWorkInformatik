@@ -17,11 +17,15 @@ import androidx.navigation.navArgument
 import com.example.projectworkmap.ui.theme.TextViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>) {
+fun NavGraph(
+    navController: NavHostController,
+    textViewModel: TextViewModel,
+    onCalculateRoute: (String, String) -> Unit,
+    cities: List<String>
+) {
     val context = navController.context
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }
-    //val cities = cities
     var nextCityToVisit by remember { mutableStateOf(cities.first()) }
 
     NavHost(navController, startDestination = "start_screen") {
@@ -58,7 +62,12 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
             RouteSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center), navController, selectedAvatar
+                    .wrapContentSize(Alignment.Center),
+                navController = navController,
+                selectedAvatar = selectedAvatar,
+                onCalculateRoute = { fromCity, toCity ->
+                    onCalculateRoute(fromCity, toCity)
+                }
             )
         }
 
