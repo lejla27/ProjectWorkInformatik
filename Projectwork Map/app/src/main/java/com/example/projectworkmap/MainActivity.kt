@@ -33,49 +33,55 @@ class MainActivity : ComponentActivity() {
             NavGraph(
                 navController = navController,
                 textViewModel = textViewModel,
-                onCalculateRoute = ::calculateRoute,
-                cities = listOf("Munich", "Heilbronn", "Stuttgart", "Augsburg", "Ulm", "Starnberg", "Salzburg", "Rosenheim", "Garching")
+                cities = listOf("Munich", "Augsburg",  "Ulm", "Stuttgart")
             )
         }
     }
 
     private fun initializeGraph() {
         graph = Graph()
-        graph.addEdge("Munich", "Augsburg", 1)
-        graph.addEdge("Augsburg", "Munich", 1)
+        graph.addEdge("Munich", "Augsburg", 6)
+        graph.addEdge("Augsburg", "Munich", 6)
 
-        graph.addEdge("Augsburg", "Ulm", 1)
-        graph.addEdge("Ulm", "Augsburg", 1)
+        graph.addEdge("Munich", "Ingolstadt", 7)
+        graph.addEdge("Ingolstadt", "Munich", 7)
 
-        graph.addEdge("Ulm", "Stuttgart", 1)
-        graph.addEdge("Stuttgart", "Ulm", 1)
+        graph.addEdge("Augsburg", "Ulm", 7)
+        graph.addEdge("Ulm", "Augsburg", 7)
 
-        graph.addEdge("Munich", "Salzburg", 1)
-        graph.addEdge("Salzburg", "Munich", 1)
+        graph.addEdge("Augsburg", "Ingolstadt", 8)
+        graph.addEdge("Ingolstadt", "Augsburg", 8)
 
-        graph.addEdge("Munich", "Rosenheim", 1)
-        graph.addEdge("Rosenheim", "Munich", 1)
+        graph.addEdge("Nuremberg", "Ingolstadt", 9)
+        graph.addEdge("Ingolstadt", "Nuremberg", 9)
 
-        graph.addEdge("Rosenheim", "Salzburg", 1)
-        graph.addEdge("Salzburg", "Rosenheim", 1)
+        graph.addEdge("Regensburg", "Nuremberg", 5)
+        graph.addEdge("Nuremberg", "Regensburg", 5)
 
-        graph.addEdge("Starnberg", "Augsburg", 1)
-        graph.addEdge("Augsburg", "Starnberg", 1)
+        graph.addEdge("Ulm", "Nuremberg", 18)
+        graph.addEdge("Nuremberg", "Ulm", 18)
 
-        graph.addEdge("Starnberg", "Munich", 1)
-        graph.addEdge("Munich", "Starnberg", 1)
+        graph.addEdge("Heilbronn", "Nuremberg", 15)
+        graph.addEdge("Nuremberg", "Heilbronn", 15)
 
-        graph.addEdge("Heilbronn", "Stuttgart", 1)
-        graph.addEdge("Stuttgart", "Heilbronn", 1)
+        graph.addEdge("Regensburg", "Ingolstadt", 6)
+        graph.addEdge("Ingolstadt", "Regensburg", 6)
 
-        graph.addEdge("Garching", "Munich", 1)
-        graph.addEdge("Munich", "Garching", 1)
+        graph.addEdge("Ulm", "Stuttgart", 8)
+        graph.addEdge("Stuttgart", "Ulm", 8)
+
+        graph.addEdge("Munich", "Salzburg", 10)
+        graph.addEdge("Salzburg", "Munich", 10)
+
+        graph.addEdge("Heilbronn", "Stuttgart", 4)
+        graph.addEdge("Stuttgart", "Heilbronn", 4)
+
     }
 
-    private fun calculateRoute(fromCity: String, toCity: String) {
-        val shortestPathList = graph.findShortestPath(fromCity, toCity)
-        val shortestPath = LinkedList(shortestPathList)
-        println("Shortest Path: $shortestPath")
+    private fun calculateRoute(fromCity: String, toCity: String): List<String> {
+        val shortestPath = graph.findShortestPath(fromCity, toCity)
+        val shortestPathList = LinkedList(shortestPath)
         routeStorage.saveRouteToFile(shortestPath, "shortest_path.txt")
+        return shortestPathList
     }
 }

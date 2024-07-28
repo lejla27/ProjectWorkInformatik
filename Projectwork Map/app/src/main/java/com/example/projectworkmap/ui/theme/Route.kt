@@ -1,5 +1,7 @@
 package com.example.projectworkmap
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.projectworkmap.ui.theme.Graph
+import com.example.projectworkmap.ui.theme.RouteStorage
+import java.util.LinkedList
 
 
 
@@ -34,14 +39,16 @@ import androidx.navigation.NavHostController
 fun RouteSelectionScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    selectedAvatar: String?,
-    onCalculateRoute: (String, String) -> Unit
+    selectedAvatar: String?
 ) {
     var fromCity by remember { mutableStateOf<String?>(null) }
     var toCity by remember { mutableStateOf<String?>(null) }
 
-    val citiesFrom = listOf("Munich", "Heilbronn", "Stuttgart", "Augsburg", "Ulm", "Starnberg")
-    val citiesTo = listOf("Heilbronn", "Salzburg", "Munich", "Stuttgart", "Ulm", "Augsburg")
+    val citiesFrom = listOf("Munich", "Salzburg", "Ingolstadt", "Regensburg", "Nuremberg", "Heilbronn", "Stuttgart", "Augsburg", "Ulm")
+    val citiesTo = citiesFrom
+
+    val context = navController.context
+
 
     Box(
         modifier = modifier,
@@ -92,7 +99,14 @@ fun RouteSelectionScreen(
                 )
                 citiesTo.forEach { city ->
                     Button(
-                        onClick = { toCity = city },
+                        onClick = {
+                            toCity = city
+                            if (fromCity != null) {
+                                val shortestPath = onCalculateRoute(fromCity!!, toCity!!)
+                                navController.navigate("map_screen/$shortestPath")
+                            }
+                            navController.navigate("map_screen")
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (toCity == city) Color(0xFF8B0000) else Color.Gray
                         ),
@@ -104,10 +118,8 @@ fun RouteSelectionScreen(
             }
         }
 
-        // Invoke onCalculateRoute when both fromCity and toCity are selected
-        if (fromCity != null && toCity != null) {
-            onCalculateRoute(fromCity!!, toCity!!)
-        }
+
+
 
         selectedAvatar?.let {
             val avatarResId = getAvatarResourceId(it)
@@ -124,3 +136,5 @@ fun RouteSelectionScreen(
         }
     }
 }
+
+

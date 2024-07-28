@@ -1,5 +1,6 @@
 package com.example.projectworkmap
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -41,7 +42,7 @@ fun MapWithButtonAndImage(
             contentScale = ContentScale.Crop
         )
         Column {
-            cities.forEach { cityName -> // Assign images to the cities
+            cities.forEach { cityName -> // Iterate over the specific cities
                 val imageResource = when (cityName) {
                     "Munich" -> R.drawable.muenchen_bild
                     "Augsburg" -> R.drawable.augsburg_bild
@@ -50,7 +51,7 @@ fun MapWithButtonAndImage(
                     else -> 0
                 }
 
-                val modifier = when (cityName) { // Assign button positions
+                val buttonModifier = when (cityName) { // Assign button positions
                     "Munich" -> Modifier.offset(x = 0.dp, y = 330.dp)
                     "Augsburg" -> Modifier.offset(x = 15.dp, y = 100.dp)
                     "Ulm" -> Modifier.offset(x = (-30).dp, y = (-140).dp)
@@ -65,7 +66,7 @@ fun MapWithButtonAndImage(
                         imageResource = imageResource,
                         isVisited = visitedCities.contains(cityName),
                         nextCityToVisit = nextCityToVisit,
-                        modifier = modifier
+                        modifier = buttonModifier
                     )
                 }
             }
@@ -77,7 +78,7 @@ fun MapWithButtonAndImage(
                     painter = painterResource(id = avatarResId),
                     contentDescription = "Selected Avatar",
                     modifier = Modifier
-                        .size(250.dp)
+                        .size(200.dp)
                         .align(Alignment.BottomEnd)
                         .padding(16.dp)
                 )
@@ -93,24 +94,26 @@ fun CityButton(
     imageResource: Int,
     isVisited: Boolean,
     nextCityToVisit: String,
-    modifier: Modifier = Modifier, // NEW
+    modifier: Modifier = Modifier,
     initialCity: Boolean = false
 ) {
-    val isLocked = !isVisited && cityName != nextCityToVisit
+    val isLocked = if (initialCity) false else !isVisited && cityName != nextCityToVisit
     val context = LocalContext.current
 
     val buttonColor = when {
-        isVisited -> Color(0xFF964B00) // If the city has been visited, the button is gray
+        isVisited -> Color.Gray // If the city has been visited, the button is gray
         cityName == nextCityToVisit -> Color(0xFF8B0000) // If the city is the next to visit, the button is red
         initialCity -> Color(0xFF8B0000) // Initially red for the first city
         else -> Color.Gray // Otherwise gray
     }
     Button(
-        onClick = { if (isLocked) {
-            Toast.makeText(context, "not unlocked yet!", Toast.LENGTH_SHORT).show()
-        } else {
-            navController.navigate("cityScreen/$cityName/$imageResource")
-        } },
+        onClick = {
+            if (isLocked) {
+                Toast.makeText(context, "Not unlocked yet!", Toast.LENGTH_SHORT).show()
+            } else {
+                navController.navigate("cityScreen/$cityName/$imageResource")
+            }
+        },
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
         modifier = modifier.padding(8.dp) // NEW
     ) {

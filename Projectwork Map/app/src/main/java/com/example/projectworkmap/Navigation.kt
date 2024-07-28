@@ -16,13 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.projectworkmap.ui.theme.TextViewModel
 
+
 @Composable
-fun NavGraph(
-    navController: NavHostController,
-    textViewModel: TextViewModel,
-    onCalculateRoute: (String, String) -> Unit,
-    cities: List<String>
-) {
+fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>) {
     val context = navController.context
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }
@@ -36,7 +32,12 @@ fun NavGraph(
                     .wrapContentSize(Alignment.Center), navController
             )
         }
-        composable("map_screen") {
+        composable(
+            route = "map_screen/{shortestPath}",
+            arguments = listOf(navArgument("shortestPath") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val shortestPathString = backStackEntry.arguments?.getString("shortestPath") ?: ""
+            val shortestPath = shortestPathString.split(",")
             MapWithButtonAndImage(
                 modifier = Modifier
                     .fillMaxSize()
@@ -45,7 +46,7 @@ fun NavGraph(
                 selectedAvatar,
                 visitedCities,
                 nextCityToVisit,
-                cities
+                shortestPath
             )
         }
         composable("avatar_screen") {
@@ -62,12 +63,7 @@ fun NavGraph(
             RouteSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
-                navController = navController,
-                selectedAvatar = selectedAvatar,
-                onCalculateRoute = { fromCity, toCity ->
-                    onCalculateRoute(fromCity, toCity)
-                }
+                    .wrapContentSize(Alignment.Center), navController, selectedAvatar
             )
         }
 
@@ -108,10 +104,27 @@ fun NavGraph(
             ) {
                 visitedCities = visitedCities + cityName
                 val currentIndex = cities.indexOf(cityName)
-                nextCityToVisit =
-                    if (currentIndex + 1 < cities.size) cities[currentIndex + 1] else ""
-                navController.navigate("map_screen")
+                if (currentIndex + 1 < cities.size) {
+                    nextCityToVisit = cities[currentIndex + 1]
+                    navController.navigate("map_screen")
+                } else {
+                    navController.navigate("end_screen/$cityName/$imageResource")
+                }
             }
+        }
+
+        composable(
+            route = "end_screen/{cityName}/{imageResource}",
+            arguments = listOf(
+                navArgument("cityName") { type = NavType.StringType },
+                navArgument("imageResource") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
+            val imageResource = backStackEntry.arguments?.getInt("imageResource") ?: 0
+            EndPage(cityName = cityName, imageResource = imageResource, modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center), navController)
         }
     }
 }

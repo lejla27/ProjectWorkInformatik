@@ -2,6 +2,7 @@ package com.example.projectworkmap
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +98,7 @@ fun Intro(
     imageResource: Int,
     avatar: String,
     viewModel: TextViewModel = viewModel(factory = TextViewModel.factory),
-    onFinish: () -> Unit // NEW
+    onFinish: () -> Unit
 ) {
     val texts by viewModel.getTextFor(cityName, avatar).collectAsState(initial = emptyList())
 
@@ -116,44 +117,58 @@ fun Intro(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-            Text(
-                text = "What do you know about $cityName?",
-                fontSize = 50.sp,
-                lineHeight = 50.sp,
-                textAlign = TextAlign.Center
-            )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF8B0000)) // Dark red color for the box
-                    .padding(16.dp)
+                    .border(width = 2.dp, color = Color.Yellow)
+                    .background(Color(0xFF8B0000).copy(alpha = 0.5f)) // Dark red color for the box
             ) {
-                LazyColumn(
+                Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    verticalArrangement = Arrangement.Top,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp)
                 ) {
-                    items(texts) { text ->
-                        Text(
-                            text = text.text,
-                            fontSize = 20.sp,
-                            lineHeight = 28.sp,
-                            textAlign = TextAlign.Center,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "What do you know about $cityName?",
+                        fontSize = 40.sp,
+                        lineHeight = 40.sp,
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    LazyColumn(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(texts) { text ->
+                            Text(
+                                text = text.text,
+                                fontSize = 20.sp,
+                                lineHeight = 28.sp,
+                                textAlign = TextAlign.Center,
+                                color = Color.White
+                            )
+                        }
                     }
                 }
             }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter // Aligns the button at the bottom center
+        ) {
             Button(
-                onClick = {
-                    onFinish()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark red color
+                onClick = { onFinish() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color for the button
+                modifier = Modifier.padding(bottom = 100.dp) // Add padding to move the button up from the bottom
             ) {
                 Text(text = "Let's go on!")
             }
