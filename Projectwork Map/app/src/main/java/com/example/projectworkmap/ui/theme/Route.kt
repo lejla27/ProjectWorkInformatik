@@ -26,10 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.projectworkmap.MainActivity
 import com.example.projectworkmap.ui.theme.Graph
 import com.example.projectworkmap.ui.theme.RouteStorage
+import com.example.projectworkmap.ui.theme.RouteViewModel
 import java.util.LinkedList
 
 @Composable
@@ -37,7 +39,8 @@ fun RouteSelectionScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     selectedAvatar: String?,
-    mainActivity: MainActivity
+    mainActivity: MainActivity,
+    routeViewModel: RouteViewModel = viewModel()
 ) {
     var fromCity by remember { mutableStateOf<String?>(null) }
     var toCity by remember { mutableStateOf<String?>(null) }
@@ -101,8 +104,8 @@ fun RouteSelectionScreen(
                             toCity = city
                             if (fromCity != null) {
                                 val shortestPath = mainActivity.calculateRoute(fromCity!!, toCity!!)
-                                val shortestPathString = shortestPath.joinToString(",")
-                                navController.navigate("map_screen/$shortestPathString")
+                                routeViewModel.setShortestPath(shortestPath) // Set the shortest path in ViewModel
+                                navController.navigate("map_screen") // Navigate to map_screen
                             }
                         },
                         colors = ButtonDefaults.buttonColors(

@@ -9,17 +9,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.projectworkmap.ui.theme.RouteViewModel
 import com.example.projectworkmap.ui.theme.TextViewModel
 
 
 @Composable
 fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>, mainActivity: MainActivity) {
     val context = navController.context
+    val routeViewModel: RouteViewModel = viewModel()
+
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }
     var nextCityToVisit by remember { mutableStateOf(cities.first()) }
@@ -33,10 +37,10 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
             )
         }
         composable(
-            route = "map_screen/{shortestPath}",
-            arguments = listOf(navArgument("shortestPath") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val shortestPath = backStackEntry.arguments?.getString("shortestPath")?.split(",") ?: emptyList()
+            route = "map_screen"
+            //arguments = listOf(navArgument("shortestPath") { type = NavType.StringType })
+        ) { //backStackEntry ->
+            //val shortestPath = backStackEntry.arguments?.getString("shortestPath")?.split(",") ?: emptyList()
             MapWithButtonAndImage(
                 modifier = Modifier
                     .fillMaxSize()
@@ -45,7 +49,7 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
                 selectedAvatar = selectedAvatar,
                 visitedCities = visitedCities,
                 nextCityToVisit = nextCityToVisit,
-                cities = shortestPath
+                routeViewModel = routeViewModel
             )
         }
         composable("avatar_screen") {
@@ -62,7 +66,11 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
             RouteSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center), navController, selectedAvatar, mainActivity
+                    .wrapContentSize(Alignment.Center),
+                navController,
+                selectedAvatar,
+                mainActivity,
+                routeViewModel = routeViewModel
             )
         }
 

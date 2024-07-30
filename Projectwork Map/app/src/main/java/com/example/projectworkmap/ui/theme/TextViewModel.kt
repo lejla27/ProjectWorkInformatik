@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.Flow
 
 class TextViewModel(private val textDao: TextDao) : ViewModel() {
 
-    fun getFullText(): Flow<List<Text>> = textDao.getAll()
     fun getTextFor(cityName: String, avatar: String): Flow<List<Text>> {
         return textDao.getByCityNameAndAvatar(cityName, avatar)
     }
@@ -23,7 +22,7 @@ class TextViewModel(private val textDao: TextDao) : ViewModel() {
         val factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as TextApplication)
-                TextViewModel(application.database.textDao())
+                TextViewModel(application.textDatabase.textDao())
             }
         }
     }

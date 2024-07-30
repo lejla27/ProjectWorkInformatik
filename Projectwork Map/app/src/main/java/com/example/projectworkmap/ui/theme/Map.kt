@@ -13,6 +13,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.projectworkmap.ui.theme.RouteViewModel
 
 @Composable
 fun MapWithButtonAndImage(
@@ -29,8 +32,11 @@ fun MapWithButtonAndImage(
     selectedAvatar: String?,
     visitedCities: Set<String>,
     nextCityToVisit: String,
-    cities: List<String>
+    routeViewModel: RouteViewModel
 ) {
+    val cities by routeViewModel.shortestPathList.observeAsState(initial = emptyList())
+
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center

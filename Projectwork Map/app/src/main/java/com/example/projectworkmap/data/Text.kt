@@ -15,5 +15,4 @@ data class Text(
     val id: Int,
     @ColumnInfo(name = "avatar")
     val avatar: String,  //if avatar is an image then the data type must be Int!
-
 )
