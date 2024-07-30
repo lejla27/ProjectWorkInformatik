@@ -33,7 +33,8 @@ class MainActivity : ComponentActivity() {
             NavGraph(
                 navController = navController,
                 textViewModel = textViewModel,
-                cities = listOf("Munich", "Augsburg",  "Ulm", "Stuttgart")
+                cities = listOf("Munich", "Augsburg",  "Ulm", "Stuttgart"),
+                mainActivity = this
             )
         }
     }
@@ -78,10 +79,10 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun calculateRoute(fromCity: String, toCity: String): List<String> {
+    public fun calculateRoute(fromCity: String, toCity: String): List<String> {
         val shortestPath = graph.findShortestPath(fromCity, toCity)
         val shortestPathList = LinkedList(shortestPath)
-        routeStorage.saveRouteToFile(shortestPath, "shortest_path.txt")
+        println(shortestPathList)
         return shortestPathList
     }
 }

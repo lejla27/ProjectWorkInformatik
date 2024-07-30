@@ -18,7 +18,7 @@ import com.example.projectworkmap.ui.theme.TextViewModel
 
 
 @Composable
-fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>) {
+fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>, mainActivity: MainActivity) {
     val context = navController.context
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }
@@ -35,18 +35,17 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
         composable(
             route = "map_screen/{shortestPath}",
             arguments = listOf(navArgument("shortestPath") { type = NavType.StringType })
-        ) {backStackEntry ->
-            val shortestPathString = backStackEntry.arguments?.getString("shortestPath") ?: ""
-            val shortestPath = shortestPathString.split(",")
+        ) { backStackEntry ->
+            val shortestPath = backStackEntry.arguments?.getString("shortestPath")?.split(",") ?: emptyList()
             MapWithButtonAndImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center),
-                navController,
-                selectedAvatar,
-                visitedCities,
-                nextCityToVisit,
-                shortestPath
+                navController = navController,
+                selectedAvatar = selectedAvatar,
+                visitedCities = visitedCities,
+                nextCityToVisit = nextCityToVisit,
+                cities = shortestPath
             )
         }
         composable("avatar_screen") {
@@ -63,7 +62,7 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
             RouteSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center), navController, selectedAvatar
+                    .wrapContentSize(Alignment.Center), navController, selectedAvatar, mainActivity
             )
         }
 

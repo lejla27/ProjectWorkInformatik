@@ -1,7 +1,5 @@
 package com.example.projectworkmap
 
-import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,17 +27,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.projectworkmap.MainActivity
 import com.example.projectworkmap.ui.theme.Graph
 import com.example.projectworkmap.ui.theme.RouteStorage
 import java.util.LinkedList
-
-
 
 @Composable
 fun RouteSelectionScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    selectedAvatar: String?
+    selectedAvatar: String?,
+    mainActivity: MainActivity
 ) {
     var fromCity by remember { mutableStateOf<String?>(null) }
     var toCity by remember { mutableStateOf<String?>(null) }
@@ -102,10 +100,10 @@ fun RouteSelectionScreen(
                         onClick = {
                             toCity = city
                             if (fromCity != null) {
-                                val shortestPath = onCalculateRoute(fromCity!!, toCity!!)
-                                navController.navigate("map_screen/$shortestPath")
+                                val shortestPath = mainActivity.calculateRoute(fromCity!!, toCity!!)
+                                val shortestPathString = shortestPath.joinToString(",")
+                                navController.navigate("map_screen/$shortestPathString")
                             }
-                            navController.navigate("map_screen")
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (toCity == city) Color(0xFF8B0000) else Color.Gray
@@ -136,5 +134,6 @@ fun RouteSelectionScreen(
         }
     }
 }
+
 
 
