@@ -10,4 +10,6 @@ interface ConnectionDao {
         @Query("SELECT * FROM connection_table")
         suspend fun getAllConnections(): List<Connection>
 
+        @Query("SELECT DISTINCT fromCity FROM connection_table")
+        suspend fun getAllCities(): List<String>
 }

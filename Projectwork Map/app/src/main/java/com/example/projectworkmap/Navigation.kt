@@ -3,7 +3,9 @@ package com.example.projectworkmap
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -20,27 +22,29 @@ import com.example.projectworkmap.ui.theme.TextViewModel
 
 
 @Composable
-fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cities: List<String>, mainActivity: MainActivity) {
+fun NavGraph(
+    navController: NavHostController,
+    textViewModel: TextViewModel,
+    mainActivity: MainActivity
+) {
     val context = navController.context
     val routeViewModel: RouteViewModel = viewModel()
 
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }
-    var nextCityToVisit by remember { mutableStateOf(cities.first()) }
+    val nextCityToVisit by routeViewModel.nextCity.observeAsState("")
+    val shortestPath by routeViewModel.shortestPathList.observeAsState(emptyList())
 
     NavHost(navController, startDestination = "start_screen") {
         composable("start_screen") {
             StartPageWithButtonAndImage(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center), navController
+                    .wrapContentSize(Alignment.Center),
+                navController = navController
             )
         }
-        composable(
-            route = "map_screen"
-            //arguments = listOf(navArgument("shortestPath") { type = NavType.StringType })
-        ) { //backStackEntry ->
-            //val shortestPath = backStackEntry.arguments?.getString("shortestPath")?.split(",") ?: emptyList()
+        composable(route = "map_screen") {
             MapWithButtonAndImage(
                 modifier = Modifier
                     .fillMaxSize()
@@ -56,7 +60,8 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
             AvatarSelectionScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center), navController
+                    .wrapContentSize(Alignment.Center),
+                navController = navController
             ) {
                 selectedAvatar = it
                 saveAvatar(context, it)
@@ -67,9 +72,9 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center),
-                navController,
-                selectedAvatar,
-                mainActivity,
+                navController = navController,
+                selectedAvatar = selectedAvatar,
+                mainActivity = mainActivity,
                 routeViewModel = routeViewModel
             )
         }
@@ -98,26 +103,28 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
                 navArgument("imageResource") { type = NavType.IntType },
                 navArgument("selectedAvatar") { type = NavType.StringType }
             )
-        )
-        { backStackEntry ->
+        ) { backStackEntry ->
             val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
             val imageResource = backStackEntry.arguments?.getInt("imageResource") ?: 0
             val selectedAvatar = backStackEntry.arguments?.getString("selectedAvatar") ?: ""
+
             Intro(
                 cityName = cityName,
                 imageResource = imageResource,
                 avatar = selectedAvatar,
-                viewModel = textViewModel
-            ) {
-                visitedCities = visitedCities + cityName
-                val currentIndex = cities.indexOf(cityName)
-                if (currentIndex + 1 < cities.size) {
-                    nextCityToVisit = cities[currentIndex + 1]
-                    navController.navigate("map_screen")
-                } else {
-                    navController.navigate("end_screen/$cityName/$imageResource")
+                textViewModel = textViewModel,
+                routeViewModel = routeViewModel,
+                onFinish = {
+                    visitedCities = visitedCities + cityName
+                    val currentIndex = shortestPath.indexOf(cityName)
+                    if (currentIndex + 1 < shortestPath.size) {
+                        routeViewModel.setNextCityToVisit(shortestPath[currentIndex + 1])
+                        navController.navigate("map_screen")
+                    } else {
+                        navController.navigate("end_screen/$cityName/$imageResource")
+                    }
                 }
-            }
+            )
         }
 
         composable(
@@ -129,9 +136,14 @@ fun NavGraph(navController: NavHostController, textViewModel: TextViewModel, cit
         ) { backStackEntry ->
             val cityName = backStackEntry.arguments?.getString("cityName") ?: ""
             val imageResource = backStackEntry.arguments?.getInt("imageResource") ?: 0
-            EndPage(cityName = cityName, imageResource = imageResource, modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center), navController)
+            EndPage(
+                cityName = cityName,
+                imageResource = imageResource,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center),
+                navController = navController
+            )
         }
     }
 }

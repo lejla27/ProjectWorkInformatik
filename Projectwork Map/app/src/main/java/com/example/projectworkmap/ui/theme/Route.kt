@@ -28,11 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.projectworkmap.MainActivity
-import com.example.projectworkmap.ui.theme.Graph
-import com.example.projectworkmap.ui.theme.RouteStorage
 import com.example.projectworkmap.ui.theme.RouteViewModel
-import java.util.LinkedList
+
 
 @Composable
 fun RouteSelectionScreen(
@@ -45,10 +42,10 @@ fun RouteSelectionScreen(
     var fromCity by remember { mutableStateOf<String?>(null) }
     var toCity by remember { mutableStateOf<String?>(null) }
 
+
     val citiesFrom = listOf("Munich", "Salzburg", "Ingolstadt", "Regensburg", "Nuremberg", "Heilbronn", "Stuttgart", "Augsburg", "Ulm")
     val citiesTo = citiesFrom
 
-    val context = navController.context
 
 
     Box(
@@ -102,10 +99,14 @@ fun RouteSelectionScreen(
                     Button(
                         onClick = {
                             toCity = city
+                            toCity = city
                             if (fromCity != null) {
                                 val shortestPath = mainActivity.calculateRoute(fromCity!!, toCity!!)
-                                routeViewModel.setShortestPath(shortestPath) // Set the shortest path in ViewModel
-                                navController.navigate("map_screen") // Navigate to map_screen
+                                routeViewModel.setShortestPath(shortestPath)
+                                if (shortestPath.isNotEmpty()) {
+                                    routeViewModel.setNextCityToVisit(shortestPath.first())
+                                }
+                                navController.navigate("map_screen")
                             }
                         },
                         colors = ButtonDefaults.buttonColors(

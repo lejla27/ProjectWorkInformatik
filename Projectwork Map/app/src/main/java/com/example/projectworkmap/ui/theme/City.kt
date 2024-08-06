@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.projectworkmap.ui.theme.RouteViewModel
 import com.example.projectworkmap.ui.theme.TextViewModel
 
 @Composable
@@ -97,10 +98,11 @@ fun Intro(
     cityName: String,
     imageResource: Int,
     avatar: String,
-    viewModel: TextViewModel = viewModel(factory = TextViewModel.factory),
+    textViewModel: TextViewModel = viewModel(factory = TextViewModel.factory),
+    routeViewModel: RouteViewModel,
     onFinish: () -> Unit
 ) {
-    val texts by viewModel.getTextFor(cityName, avatar).collectAsState(initial = emptyList())
+    val texts by textViewModel.getTextFor(cityName, avatar).collectAsState(initial = emptyList())
 
     Box(
         contentAlignment = Alignment.Center,
