@@ -13,13 +13,13 @@ abstract class ConnectionDatabase : RoomDatabase() {
         @Volatile
         private var Instance: ConnectionDatabase? = null
         fun getDatabase(context: Context): ConnectionDatabase {
-            return ConnectionDatabase.Instance ?: synchronized(this) {
+            return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, ConnectionDatabase::class.java, "connection_table")
                     .createFromAsset("database/connection_table.db")
                     .fallbackToDestructiveMigration()
                     .build()
                     .also{
-                        ConnectionDatabase.Instance = it
+                        Instance = it
                     }
             }
         }

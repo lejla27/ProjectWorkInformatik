@@ -29,6 +29,7 @@ fun NavGraph(
 ) {
     val context = navController.context
     val routeViewModel: RouteViewModel = viewModel()
+    val cityViewModel: CityViewModel = viewModel() //********************************************************
 
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }
@@ -53,7 +54,8 @@ fun NavGraph(
                 selectedAvatar = selectedAvatar,
                 visitedCities = visitedCities,
                 nextCityToVisit = nextCityToVisit,
-                routeViewModel = routeViewModel
+                routeViewModel = routeViewModel,
+                cityViewModel = cityViewModel
             )
         }
         composable("avatar_screen") {

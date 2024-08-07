@@ -11,10 +11,6 @@ class RouteViewModel : ViewModel() {
     private val _nextCity = MutableLiveData<String>()
     val nextCity: LiveData<String> = _nextCity
 
-    private val _currentCityToFocus = MutableLiveData<String>()
-    val currentCityToFocus: LiveData<String> get() = _currentCityToFocus
-
-
 
     fun setShortestPath(path: List<String>) {
         shortestPath.value = path
@@ -24,10 +20,5 @@ class RouteViewModel : ViewModel() {
     fun setNextCityToVisit(city: String) {
         _nextCity.value = city
     }
-
-    fun setCurrentCityToFocus(city: String) {
-        _currentCityToFocus.value = city
-    }
-
 
 }

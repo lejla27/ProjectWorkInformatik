@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    public fun calculateRoute(fromCity: String, toCity: String): List<String> {
+    fun calculateRoute(fromCity: String, toCity: String): List<String> {
         val shortestPath = graph.findShortestPath(fromCity, toCity)
         val shortestPathList = LinkedList(shortestPath)
         println("Shortest Path: $shortestPathList") //this print statement is only to test if the shortest path is correct

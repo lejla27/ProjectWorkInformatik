@@ -1,5 +1,6 @@
 package com.example.projectworkmap
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -41,9 +42,12 @@ fun MapWithButtonAndImage(
     selectedAvatar: String?,
     visitedCities: Set<String>,
     nextCityToVisit: String,
-    routeViewModel: RouteViewModel
+    routeViewModel: RouteViewModel,
+    cityViewModel : CityViewModel
 ) {
-    val cities by routeViewModel.shortestPathList.observeAsState(initial = emptyList())
+    val targetCities by routeViewModel.shortestPathList.observeAsState(initial = emptyList())
+    val allCities by cityViewModel.cities.observeAsState(initial = emptyList())
+
 
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
@@ -80,41 +84,23 @@ fun MapWithButtonAndImage(
                 contentScale = ContentScale.Crop
             )
 
-            // Define positions in pixels on the map image
-            val cityPositions = mapOf(
-                "Munich" to Pair(1800, 1950),
-                "Augsburg" to Pair(1450, 1750),
-                "Ulm" to Pair(900, 1600),
-                "Stuttgart" to Pair(300, 1300),
-                "Heilbronn" to Pair(180, 900),
-                "Nuremberg" to Pair(1550, 610),
-                "Regensburg" to Pair(2250, 1050),
-                "Ingolstadt" to Pair(1700, 1400),
-                "Salzburg" to Pair(2400, 2000)
-            )
 
-            // Position buttons on the map using the pixel coordinates
-            cities.forEach { cityName ->
-                val imageResource = when (cityName) {
-                    "Munich" -> R.drawable.muenchen_bild
-                    "Augsburg" -> R.drawable.augsburg_bild
-                    "Ulm" -> R.drawable.ulm_bild
-                    "Stuttgart" -> R.drawable.stuttgart_bild
-                    "Heilbronn" -> R.drawable.heilbronn_bild
-                    "Nuremberg" -> R.drawable.nuremberg_bild
-                    "Regensburg" -> R.drawable.regensburg_bild
-                    "Ingolstadt" -> R.drawable.ingolstadt_bild
-                    "Salzburg" -> R.drawable.salzburg_bild
-                    else -> 0
-                }
+            targetCities.forEach { cityName ->
+                val cityData = allCities.find { it.city == cityName }
+                cityData?.let { city ->
 
-                cityPositions[cityName]?.let { (xPixel, yPixel) ->
-                    val buttonModifier = Modifier.offset(
-                        x = xPixel.pixelsToDp(),
-                        y = yPixel.pixelsToDp()
+                    // Retrieve the image resource ID from the database "city_table" column "image"
+                    val imageResource = LocalContext.current.resources.getIdentifier(
+                        city.image, "drawable", LocalContext.current.packageName
                     )
 
+
                     if (imageResource != 0) {
+                        val buttonModifier = Modifier.offset(
+                            x = city.x.pixelsToDp(),
+                            y = city.y.pixelsToDp()
+                        )
+
                         CityButton(
                             cityName = cityName,
                             navController = navController,
