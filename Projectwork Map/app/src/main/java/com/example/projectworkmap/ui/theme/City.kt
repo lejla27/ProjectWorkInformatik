@@ -151,7 +151,7 @@ fun Intro(
                         items(texts) { text ->
                             Text(
                                 text = text.text,
-                                fontSize = 20.sp,
+                                fontSize = 15.sp,
                                 lineHeight = 28.sp,
                                 textAlign = TextAlign.Center,
                                 color = Color.White
@@ -170,7 +170,7 @@ fun Intro(
             Button(
                 onClick = { onFinish() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color for the button
-                modifier = Modifier.padding(bottom = 100.dp) // Add padding to move the button up from the bottom
+                modifier = Modifier.padding(bottom = 50.dp) // Add padding to move the button up from the bottom
             ) {
                 Text(text = "Let's go on!")
             }
