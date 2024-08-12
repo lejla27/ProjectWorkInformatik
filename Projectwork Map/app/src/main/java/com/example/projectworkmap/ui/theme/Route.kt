@@ -13,7 +13,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,19 +39,20 @@ fun RouteSelectionScreen(
     navController: NavHostController,
     selectedAvatar: String?,
     mainActivity: MainActivity,
-    routeViewModel: RouteViewModel = viewModel()
+    routeViewModel: RouteViewModel = viewModel(),
+    cityViewModel: CityViewModel = viewModel()
 ) {
     var fromCity by remember { mutableStateOf<String?>(null) }
     var toCity by remember { mutableStateOf<String?>(null) }
 
+    val cities by cityViewModel.cityNames.observeAsState(emptyList())
 
-    val citiesFrom = listOf("Munich", "Salzburg", "Ingolstadt", "Regensburg", "Nuremberg", "Heilbronn", "Stuttgart", "Augsburg", "Ulm")
-    val citiesTo = citiesFrom
-
-
+    LaunchedEffect(Unit) {
+        cityViewModel.loadCityNames()  // Ensure the city names are loaded
+    }
 
     Box(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -58,6 +61,7 @@ fun RouteSelectionScreen(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -73,11 +77,11 @@ fun RouteSelectionScreen(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                citiesFrom.forEach { city ->
+                cities.forEach { city ->
                     Button(
                         onClick = { fromCity = city },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (fromCity == city) Color(0xFF8B0000) else Color.Gray
+                            containerColor = if (fromCity == city) Color(0xFFE1CFAA) else Color.Gray
                         ),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     ) {
@@ -95,10 +99,9 @@ fun RouteSelectionScreen(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                citiesTo.forEach { city ->
+                cities.forEach { city ->
                     Button(
                         onClick = {
-                            toCity = city
                             toCity = city
                             if (fromCity != null) {
                                 val shortestPath = mainActivity.calculateRoute(fromCity!!, toCity!!)
@@ -110,7 +113,7 @@ fun RouteSelectionScreen(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (toCity == city) Color(0xFF8B0000) else Color.Gray
+                            containerColor = if (toCity == city) Color(0xFFFFE0AC) else Color.Gray
                         ),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     ) {
@@ -120,24 +123,24 @@ fun RouteSelectionScreen(
             }
         }
 
-
-
-
+        // Avatar positioned at the bottom center
         selectedAvatar?.let {
             val avatarResId = getAvatarResourceId(it)
             if (avatarResId != 0) {
-                Image(
-                    painter = painterResource(id = avatarResId),
-                    contentDescription = "Selected Avatar",
+                Box(
                     modifier = Modifier
-                        .size(200.dp)
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                )
+                        .fillMaxSize()
+                        .padding(bottom = 16.dp),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Image(
+                        painter = painterResource(id = avatarResId),
+                        contentDescription = "Selected Avatar",
+                        modifier = Modifier.size(200.dp)
+                    )
+                }
             }
         }
     }
 }
-
-
 

@@ -77,7 +77,8 @@ fun NavGraph(
                 navController = navController,
                 selectedAvatar = selectedAvatar,
                 mainActivity = mainActivity,
-                routeViewModel = routeViewModel
+                routeViewModel = routeViewModel,
+                cityViewModel = cityViewModel
             )
         }
 
@@ -146,6 +147,12 @@ fun NavGraph(
                     .wrapContentSize(Alignment.Center),
                 navController = navController
             )
+
+            // After showing the end page, reset the route
+            LaunchedEffect(Unit) {
+                routeViewModel.resetRoute()
+                visitedCities = emptySet() // Clear visited cities
+            }
         }
     }
 }

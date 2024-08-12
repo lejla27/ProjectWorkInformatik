@@ -92,7 +92,7 @@ fun AvatarSelectionScreen(
 
             Button(
                 onClick = { navController.navigate("route_screen") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF874F45)), // Dark red color
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Text(
@@ -108,7 +108,7 @@ fun AvatarSelectionScreen(
 fun AvatarListItem(avatar: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDCA79A)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(text = avatar, fontSize = 16.sp)

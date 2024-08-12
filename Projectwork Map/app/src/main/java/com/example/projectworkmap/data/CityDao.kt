@@ -19,4 +19,7 @@ interface CityDao {
     @Query("SELECT * FROM city_table")
     fun getAllCities(): List<City>
 
+    @Query("SELECT city FROM city_table")
+    suspend fun getCities(): List<String>
+
 }

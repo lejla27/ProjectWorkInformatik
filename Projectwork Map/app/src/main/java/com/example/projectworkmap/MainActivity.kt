@@ -25,12 +25,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         val textViewModel: TextViewModel by viewModels {
             TextViewModel.factory
         }
 
         routeStorage = RouteStorage(this)
-
         initializeGraph()
 
         setContent {

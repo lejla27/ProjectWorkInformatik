@@ -42,7 +42,7 @@ fun StartPageWithButtonAndImage(modifier: Modifier = Modifier, navController: Na
 
             Button(
                 onClick = { navController.navigate("avatar_screen") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF9DEDC)), // Dark red color
                 modifier = buttonModifier
             ) {
                 Text(

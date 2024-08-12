@@ -17,6 +17,9 @@ class CityViewModel(application: Application) : AndroidViewModel(application) {
     private val _cities = MutableLiveData<List<City>>()
     val cities: LiveData<List<City>> = _cities
 
+    private val _cityNames = MutableLiveData<List<String>>()
+    val cityNames: LiveData<List<String>> = _cityNames
+
     init {
         fetchCities()
     }
@@ -24,6 +27,12 @@ class CityViewModel(application: Application) : AndroidViewModel(application) {
     private fun fetchCities() {
         viewModelScope.launch(Dispatchers.IO) {
             _cities.postValue(db.cityDao().getAllCities())
+        }
+    }
+
+    fun loadCityNames() {
+        viewModelScope.launch {
+            _cityNames.value = db.cityDao().getCities()
         }
     }
 }

@@ -21,4 +21,10 @@ class RouteViewModel : ViewModel() {
         _nextCity.value = city
     }
 
+    // Function to reset the route-related variables
+    fun resetRoute() {
+        shortestPath.value = emptyList() // Reset the shortest path
+        _nextCity.value = "" // Clear the next city to visit
+    }
+
 }

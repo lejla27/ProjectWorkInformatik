@@ -48,7 +48,6 @@ fun MapWithButtonAndImage(
     val targetCities by routeViewModel.shortestPathList.observeAsState(initial = emptyList())
     val allCities by cityViewModel.cities.observeAsState(initial = emptyList())
 
-
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
 
@@ -62,8 +61,7 @@ fun MapWithButtonAndImage(
         return (this / LocalContext.current.resources.displayMetrics.density).dp
     }
 
-
-
+    Box(modifier = modifier.fillMaxSize()) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -84,16 +82,13 @@ fun MapWithButtonAndImage(
                 contentScale = ContentScale.Crop
             )
 
-
             targetCities.forEach { cityName ->
                 val cityData = allCities.find { it.city == cityName }
                 cityData?.let { city ->
-
                     // Retrieve the image resource ID from the database "city_table" column "image"
                     val imageResource = LocalContext.current.resources.getIdentifier(
                         city.image, "drawable", LocalContext.current.packageName
                     )
-
 
                     if (imageResource != 0) {
                         val buttonModifier = Modifier.offset(
@@ -113,23 +108,29 @@ fun MapWithButtonAndImage(
                 }
             }
         }
+    }
 
-        // Selected avatar (if any)
         selectedAvatar?.let {
             val avatarResId = getAvatarResourceId(it)
             if (avatarResId != 0) {
-                Image(
-                    painter = painterResource(id = avatarResId),
-                    contentDescription = "Selected Avatar",
+                Box(
                     modifier = Modifier
-                        .size(200.dp)
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                )
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Image(
+                        painter = painterResource(id = avatarResId),
+                        contentDescription = "Selected Avatar",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .padding(16.dp)
+                    )
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun CityButton(
@@ -145,9 +146,9 @@ fun CityButton(
     val context = LocalContext.current
 
     val buttonColor = when {
-        isVisited -> Color.Gray // If the city has been visited, the button is gray
-        cityName == nextCityToVisit -> Color(0xFF8B0000) // If the city is the next to visit, the button is red
-        initialCity -> Color(0xFF8B0000) // Initially red for the first city
+        isVisited -> Color.Green // If the city has been visited, the button is green
+        cityName == nextCityToVisit -> Color(0xFF874F45) // If the city is the next to visit, the button is red
+        initialCity -> Color(0xFF874F45) // Initially red for the first city
         else -> Color.Gray // Otherwise gray
     }
     Button(
