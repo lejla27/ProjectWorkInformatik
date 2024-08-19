@@ -23,12 +23,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
+
+val AbrilFatface = FontFamily(
+    Font(R.font.abrilfatface_regular)
+)
+
+val PurplePurse = FontFamily(
+    Font(R.font.purplepurse_regular),
+    Font(R.font.purplepurse_regular, FontWeight.Bold)
+)
 @Composable
 fun AvatarSelectionScreen(
     modifier: Modifier = Modifier,
@@ -36,12 +49,8 @@ fun AvatarSelectionScreen(
     onAvatarSelected: (String) -> Unit) {
     var selectedAvatar by remember { mutableStateOf("Select Avatar") }
     val avatars = listOf("Elsa", "Barbie", "Spiderman", "Harry Potter")
-    val avatarImages = mapOf(
-        "Elsa" to R.drawable.elsa_drawable,
-        "Barbie" to R.drawable.barbie_drawable,
-        "Spiderman" to R.drawable.spiderman_drawable,
-        "Harry Potter" to R.drawable.harrypotter_drawable
-    )
+
+    val context = LocalContext.current
 
     Box(
         modifier = modifier,
@@ -58,9 +67,11 @@ fun AvatarSelectionScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Choose Avatar",
+                text = "CHOOSE AVATAR",
                 fontSize = 24.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontFamily = PurplePurse,
+                color = Color.Black
             )
             Box(
                 modifier = Modifier
@@ -71,14 +82,16 @@ fun AvatarSelectionScreen(
             ) {
                 selectedAvatar.takeIf { it != "Select Avatar" }?.let {
                     Image(
-                        painter = painterResource(id = avatarImages[it] ?: 0),
+                        painter = painterResource(id = getAvatarResourceId(it) ?: 0),
                         contentDescription = "$it Image",
-                        modifier = Modifier.size(250.dp)
+                        modifier = Modifier.size(400.dp)
                     )
                 } ?: Text(
                     text = "No Avatar Selected",
                     fontSize = 18.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontFamily = PurplePurse,
+                    color = Color.Black
                 )
             }
             LazyColumn {
@@ -91,13 +104,21 @@ fun AvatarSelectionScreen(
             }
 
             Button(
-                onClick = { navController.navigate("route_screen") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF874F45)), // Dark red color
+                onClick = {
+                    if(selectedAvatar == "Select Avatar"){
+                        showToast(context, "Please select an Avatar first!") }
+                    else {
+                        navController.navigate("route_screen") }
+                          },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Text(
-                    text = "Choose Route",
-                    fontSize = 16.sp
+                    text = "CHOOSE ROUTE",
+                    fontSize = 16.sp,
+                    fontFamily = PurplePurse,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
         }
@@ -111,7 +132,12 @@ fun AvatarListItem(avatar: String, onClick: () -> Unit) {
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDCA79A)),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = avatar, fontSize = 16.sp)
+        Text(
+            text = avatar,
+            fontSize = 16.sp,
+            fontFamily = AbrilFatface,
+            color = Color.Black
+        )
     }
 }
 

@@ -25,13 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.projectworkmap.ui.theme.RouteViewModel
-import com.example.projectworkmap.ui.theme.TextViewModel
+import com.example.projectworkmap.data.TextViewModel
+
 
 @Composable
 fun CityScreen(
@@ -61,7 +63,10 @@ fun CityScreen(
                 text = cityName,
                 fontSize = 50.sp,
                 lineHeight = 50.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontFamily = PurplePurse,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -73,7 +78,7 @@ fun CityScreen(
                         painter = painterResource(id = avatarResId),
                         contentDescription = "Selected Avatar",
                         modifier = Modifier
-                            .size(200.dp)
+                            .size(300.dp)
                             .padding(16.dp)
                     )
                 }
@@ -87,7 +92,14 @@ fun CityScreen(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)) // Dark red color
             ) {
-                Text(text = "Explore")
+                Text(
+                    text = "EXPLORE",
+                    fontSize = 16.sp,
+                    fontFamily = PurplePurse,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -140,6 +152,7 @@ fun Intro(
                         fontSize = 40.sp,
                         lineHeight = 40.sp,
                         textAlign = TextAlign.Center,
+                        fontFamily = AbrilFatface,
                         color = Color.White,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -172,7 +185,12 @@ fun Intro(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)), // Dark red color for the button
                 modifier = Modifier.padding(bottom = 50.dp) // Add padding to move the button up from the bottom
             ) {
-                Text(text = "Let's go on!")
+                Text(
+                    text = "Let's go on!",
+                    fontSize = 16.sp,
+                    fontFamily = AbrilFatface,
+                    color = Color.White
+                )
             }
         }
     }

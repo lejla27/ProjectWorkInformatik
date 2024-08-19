@@ -114,16 +114,16 @@ fun MapWithButtonAndImage(
             val avatarResId = getAvatarResourceId(it)
             if (avatarResId != 0) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Image(
                         painter = painterResource(id = avatarResId),
                         contentDescription = "Selected Avatar",
                         modifier = Modifier
-                            .size(200.dp)
-                            .padding(16.dp)
+                            .size(400.dp)
+                            .align(Alignment.BottomEnd)
+                            .padding(0.dp)
                     )
                 }
             }
@@ -146,9 +146,9 @@ fun CityButton(
     val context = LocalContext.current
 
     val buttonColor = when {
-        isVisited -> Color.Green // If the city has been visited, the button is green
-        cityName == nextCityToVisit -> Color(0xFF874F45) // If the city is the next to visit, the button is red
-        initialCity -> Color(0xFF874F45) // Initially red for the first city
+        isVisited -> Color(0xFF006400) // If the city has been visited, the button is green
+        cityName == nextCityToVisit -> Color(0xFF8B0000) // If the city is the next to visit, the button is red
+        initialCity -> Color(0xFF8B0000) // Initially red for the first city
         else -> Color.Gray // Otherwise gray
     }
     Button(

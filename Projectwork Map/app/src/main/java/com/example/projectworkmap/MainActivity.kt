@@ -7,10 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import com.example.projectworkmap.data.ConnectionDao
 import com.example.projectworkmap.ui.theme.Graph
 import com.example.projectworkmap.ui.theme.RouteStorage
-import com.example.projectworkmap.ui.theme.TextViewModel
+import com.example.projectworkmap.data.TextViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,7 +45,7 @@ class MainActivity : ComponentActivity() {
     private fun initializeGraph() {
 
         graph = Graph()
-        val connectionDao = (application as TextApplication).connectionDatabase.connectionDao()
+        val connectionDao = (application as AppDatabase).connectionDatabase.connectionDao()
 
         lifecycleScope.launch {
             val allConnections = withContext(Dispatchers.IO) {

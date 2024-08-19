@@ -18,7 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.projectworkmap.ui.theme.RouteViewModel
-import com.example.projectworkmap.ui.theme.TextViewModel
+import com.example.projectworkmap.data.TextViewModel
 
 
 @Composable
@@ -29,7 +29,7 @@ fun NavGraph(
 ) {
     val context = navController.context
     val routeViewModel: RouteViewModel = viewModel()
-    val cityViewModel: CityViewModel = viewModel() //********************************************************
+    val cityViewModel: CityViewModel = viewModel()
 
     var selectedAvatar by remember { mutableStateOf(getSavedAvatar(context)) }
     var visitedCities by remember { mutableStateOf(setOf<String>()) }

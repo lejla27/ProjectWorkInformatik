@@ -5,8 +5,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.Font
+import com.example.projectworkmap.R
 
-// Set of Material typography styles to start with
+
+
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -31,4 +34,14 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
     */
+)
+
+val AbrilFatface = FontFamily(
+    Font(R.font.abrilfatface_regular)
+)
+
+
+val PurplePurse = FontFamily(
+    Font(R.font.purplepurse_regular),
+    Font(R.font.purplepurse_regular, FontWeight.Bold)
 )

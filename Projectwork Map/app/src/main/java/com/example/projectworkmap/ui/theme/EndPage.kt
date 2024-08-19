@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -26,7 +27,10 @@ import androidx.navigation.NavHostController
 
 
 @Composable
-fun EndPage(cityName: String, imageResource: Int, modifier: Modifier = Modifier, navController: NavHostController) {
+fun EndPage(cityName: String,
+            imageResource: Int,
+            modifier: Modifier = Modifier,
+            navController: NavHostController) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -58,7 +62,7 @@ fun EndPage(cityName: String, imageResource: Int, modifier: Modifier = Modifier,
                     Text(
                         text = "You have finally arrived! Now it's your turn to explore $cityName!",
                         fontSize = 40.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontFamily = AbrilFatface,
                         color = Color.White,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -66,7 +70,7 @@ fun EndPage(cityName: String, imageResource: Int, modifier: Modifier = Modifier,
                     Text(
                         text = "If you want to choose a new route, please go back to the homepage!",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontFamily = AbrilFatface,
                         color = Color.White,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -85,7 +89,13 @@ fun EndPage(cityName: String, imageResource: Int, modifier: Modifier = Modifier,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B0000)),
                 modifier = Modifier.padding(bottom = 100.dp)
             ) {
-                Text(text = "Back to Homepage")
+                Text(
+                    text = "BACK TO HOMEPAGE",
+                    fontSize = 16.sp,
+                    fontFamily = PurplePurse,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center)
             }
         }
     }

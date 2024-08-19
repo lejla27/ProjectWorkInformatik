@@ -48,7 +48,7 @@ fun RouteSelectionScreen(
     val cities by cityViewModel.cityNames.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        cityViewModel.loadCityNames()  // Ensure the city names are loaded
+        cityViewModel.loadCityNames()  // ensure the city names are loaded
     }
 
     Box(
@@ -136,7 +136,7 @@ fun RouteSelectionScreen(
                     Image(
                         painter = painterResource(id = avatarResId),
                         contentDescription = "Selected Avatar",
-                        modifier = Modifier.size(200.dp)
+                        modifier = Modifier.size(250.dp)
                     )
                 }
             }
