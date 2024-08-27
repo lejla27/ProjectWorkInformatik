@@ -121,7 +121,7 @@ fun MapWithButtonAndImage(
                         painter = painterResource(id = avatarResId),
                         contentDescription = "Selected Avatar",
                         modifier = Modifier
-                            .size(400.dp)
+                            .size(350.dp)
                             .align(Alignment.BottomEnd)
                             .padding(0.dp)
                     )
