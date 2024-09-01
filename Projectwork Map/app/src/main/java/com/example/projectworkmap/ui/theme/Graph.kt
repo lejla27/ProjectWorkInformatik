@@ -16,14 +16,6 @@ class Graph {
         return adjacencyList[node]
     }
 
-    fun getAllNodes(): Set<String> {
-        return adjacencyList.keys
-    }
-
-    fun updateWeight(source: String, destination: String, newWeight: Int) {
-        adjacencyList[source]?.find { it.destination == destination }?.weight = newWeight
-        adjacencyList[destination]?.find { it.destination == source }?.weight = newWeight
-    }
 
     fun dijkstra(start: String): Map<String, Int> {
         val distances = mutableMapOf<String, Int>().withDefault { Int.MAX_VALUE }
